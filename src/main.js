@@ -31,7 +31,7 @@ function preload() {}
 function create() {
     this.socket = io();
 
-    socket.on("connect", function () {
+    this.socket.on("connect", function () {
         console.log("Connected to server");
     });
 }
