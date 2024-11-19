@@ -3,6 +3,9 @@ var app = express();
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
 
+// 현재 게임에 있는 모든 플레이어를 추적하는 객체
+var players = {};
+
 app.use(express.static(__dirname));
 
 app.get("/", function (req, res) {
@@ -15,7 +18,29 @@ server.listen(8081, function () {
 
 io.on("connection", function (socket) {
     console.log("a user connected");
+
+    // new player 생성 후 players object에 추가
+    players[socket.id] = {
+        rotation: 0,
+        x: Math.floor(Math.random() * 700) + 50,
+        y: Math.floor(Math.random() * 500) + 50,
+        playerId: socket.id,
+        team: Math.floor(Math.random() * 2) == 0 ? "red" : "blue",
+    };
+
+    // players object를 new player에게 보냄
+    socket.emit("currentPlayers", players);
+
+    // new player의 모든 other players를 update
+    socket.broadcast.emit("newPlayer", players[socket.id]);
+
     socket.on("disconnect", function () {
         console.log("user disconnected");
+
+        // players 객체에서 player 제거
+        delete players[socket.id];
+
+        // 다른 플레이어들에게 해당 플레이어가 제거되었다는 것을 알림
+        io.emit("disconnect", socket.id);
     });
 });
