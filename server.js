@@ -41,6 +41,15 @@ io.on("connection", function (socket) {
         delete players[socket.id];
 
         // 다른 플레이어들에게 해당 플레이어가 제거되었다는 것을 알림
-        io.emit("disconnect", socket.id);
+        io.emit("_disconnect", socket.id);
+    });
+
+    // when a player moves, update the player data
+    socket.on("playerMovement", function (movementData) {
+        players[socket.id].x = movementData.x;
+        players[socket.id].y = movementData.y;
+        players[socket.id].rotation = movementData.rotation;
+        // emit a message to all players about the player that moved
+        socket.broadcast.emit("playerMoved", players[socket.id]);
     });
 });
