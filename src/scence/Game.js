@@ -1,28 +1,22 @@
-var config = {
-    type: Phaser.AUTO,
-    parent: "pahser-example",
-    width: 800,
-    height: 600,
-    physics: {
-        default: "arcade",
-        arcade: {
-            debug: false,
-            gravity: { y: 0 },
-        },
-    },
-    scence: {
-        preload: preload,
-        create: create,
-        update: update,
-    },
-};
+import { Scene } from "phaser";
+import Config from "../Config";
+import { Player } from "./Player";
+import { Bullet } from "./Bullet";
+import { state } from "./State";
+import { Preloader } from "./Preloader";
 
-var game = new Phaser.Game(config);
+export class Game extends Scene {
+    constructor() {
+        super("Game");
+    }
 
-function preload() {}
+    create() {
+        this.socket = io();
 
-function create() {}
-
-function update() {}
-
-this.socket = io();
+        const playerId = this.socket.id;
+        const player = new (Player(
+            playerid,
+            Math.floor(Math.random() * 700) + 50
+        ))();
+    }
+}
